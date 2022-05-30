@@ -1,11 +1,11 @@
-import 'dart:convert';
-
 import 'package:cilected_proj/models/data_model.dart';
 import 'package:cilected_proj/utils/app_snackbar.dart';
 import 'package:cilected_proj/utils/constant/api_constants.dart';
 import 'package:cilected_proj/utils/constant/string_constants.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+
+import 'components/item.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -15,10 +15,14 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  /// [dataModel] will hold fetched data from API
   late DataModel dataModel;
+
+  /// Act as data availability flag, initially it is false
+  /// and will be updated in [fetchData] function
   bool isDataFetched = false;
 
-  // Fetch data
+  /// Fetches data and set to [dataModel] then update [isDataFetched] to hold true
   Future fetchData() async {
     String url = ApiConstants.baseUrl + ApiConstants.getPracticalData;
     Dio dio = Dio(BaseOptions(headers: {"Content-Type": "application/json"}));
@@ -27,20 +31,20 @@ class _HomeScreenState extends State<HomeScreen> {
       if (response.statusCode == 200) {
         dataModel = DataModel.fromJson(response.data);
         isDataFetched = true;
-        setState(() {});
+        setState(() {}); // Updating state once we have data
       } else {
         AppSnackbar.showSnackbar(context: context, title: "Error: Something went wrong", bgColor: Colors.red);
         throw Exception('Error: Something went wrong');
       }
     }).onError((DioError errro, stackTrace) {
       AppSnackbar.showSnackbar(context: context, title: errro.message, bgColor: Colors.red);
-      debugPrint(errro.message);
+      debugPrint(errro.message); // Printing error message
     });
   }
 
   @override
   void initState() {
-    fetchData();
+    fetchData(); // Fetching data before build
     super.initState();
   }
 
@@ -55,33 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
-                    children: dataModel.data
-                        .map((element) => Column(
-                              children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    element.images == null
-                                        ? const Text('Received null as image url')
-                                        : Container(
-                                            height: 100,
-                                            decoration: BoxDecoration(border: Border.all()),
-                                            alignment: Alignment.center,
-                                            child: Image.network(
-                                              element.images!,
-                                              errorBuilder: (context, object, stackTrace) {
-                                                return Text('Failed to load image, wrong url');
-                                              },
-                                            ),
-                                          ),
-                                    Text('Title: ${element.title}'),
-                                    Text('Description: ${element.description}'),
-                                  ],
-                                ),
-                                const SizedBox(height: 50),
-                              ],
-                            ))
-                        .toList(),
+                    children: dataModel.data.map((element) => Item(element: element)).toList(),
                   ),
                 ),
               )
