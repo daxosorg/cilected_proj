@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../models/data_model.dart';
+import '../../utils/constant/string_constants.dart';
 import 'item_image.dart';
 
 class Item extends StatelessWidget {
@@ -15,7 +16,7 @@ class Item extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            element.images == null ? const Text('Received null as image url') : ItemImage(imageUrl: element.images!),
+            element.images == null ? const Text(StringConstants.nullImageErrorMessage) : ItemImage(imageUrl: element.images!),
             Text('Title: ${element.title}'),
             Text('Description: ${element.description}'),
           ],

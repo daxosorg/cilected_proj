@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../utils/constant/string_constants.dart';
+
 class ItemImage extends StatelessWidget {
   const ItemImage({Key? key, required this.imageUrl}) : super(key: key);
 
@@ -14,7 +16,7 @@ class ItemImage extends StatelessWidget {
       child: Image.network(
         imageUrl,
         errorBuilder: (context, object, stackTrace) {
-          return const Text('Failed to load image, wrong url');
+          return const Text(StringConstants.wrongImageUrlMessage);
         },
       ),
     );
